@@ -1,28 +1,30 @@
 # Gatsby에 ReasonML 끼얹기
-## 들어가며
-저는 그린랩스 웹개발팀의 프론트엔드 개발자 문운기라고 합니다. 다른 포스트에서 이미 다룬 바와 같이, 저희 그린랩스 웹개발팀은 ReasonML을 도입하여 개발을 하고 있습니다. 아마도 다른 포스트에서 왜 저희 팀이 ReasonML을 도입하였는지에 대한 설명이 있었을 것이라 생각하여, 그에 대한 내용은 이 포스트에서 다루진 않겠습니다.
 
-이번 포스트에서는 저희 팀에서 사용하고 있는 웹프레임워크인 Gatsby(팀내에서는 `갓`츠비라고 부르고 있습니다. 존엄!)를 ReasonML로 개발하는 과정 및 그 과정에서 얻은 경험을 공유하려고 합니다.
+## 들어가며
+저는 그린랩스 웹개발팀의 프론트엔드 개발자 문운기라고 합니다. 다른 포스트에서 이미 다룬 바와 같이, 저희 그린랩스 웹개발팀은 ReasonML(이하 Reason, 뤼즌)을 도입하여 개발을 하고 있습니다. 아마도 다른 포스트에서 왜 저희 팀이 Reason을 도입하였는지에 대한 설명이 있었을 것이라 생각하여, 그에 대한 내용은 이 포스트에서 다루진 않겠습니다.
+
+이번 포스트에서는 저희 팀에서 사용하고 있는 웹프레임워크인 Gatsby(팀내에서는 `갓`츠비라고 부르고 있습니다. 존엄!)를 Reason으로 개발하는 과정 및 그 과정에서 얻은 경험을 공유하려고 합니다.
 
 다룰 내용은 아래와 같습니다.
-1. ReasonML로 Gatsby로 웹페이지 만들기
-2. Gatsby 플러그인을 이용하여 Gatsby GraphQL Query를 이용하여 image 불러오기
+1. Reason를 이용하여 Gatsby 웹 어플리케이션 만들기
+2. Gatsby Plugin과 Gatsby GraphQL Query를 이용하여 image 불러오기
 
 ## Prerequisites
-* ReasonML의 문법
+* Reason 문법
 * ReasonReact에 대한 약간의 지식
 * Gatsby에 대한 기본 지식
 
 > sample code: https://github.com/mattdamon108/first-gatsby-reasonml
   
-## Gatsby에 ReasonML 끼얹기
+## Gatsby에 Reason 끼얹기
 Godtsby, 아니 Gatsby를 처음 initialize하는 과정은 자세히 다루진 않겠습니다. 이미 Gatsby 공식 문서의 [Quick Start](https://www.gatsbyjs.com/docs/quick-start/)에도 아주 잘 설명되어있습니다.
 
 짜잔~!
 <img src="./assets/gatsby-hello-world.png" alt="hello-world-gatsby" />
 Hello world!까지는 문제 없이 보셨죠? 이제 본격적으로 ReasonML을 조금씩 끼얹어보겠습니다.
 
-우선, ReasonML은 OCaml의 syntax sugar로서 OCaml 컴파일러가 아닌 [BuckleScript](https://rescript-lang.org/)의 컴파일러를 이용해서 Javascript 코드를 트랜스컴파일 합니다. (왜 BuckleScript라고 하구선 링크는 ReScript라는 곳으로 연결될까?라고 하시는 분들께는 별도의 포스트로 OCaml/ReasonML/BuckleScript/ReScript의 어두운 과거를 되짚는 포스트에서 자세히 설명드리도록 하겠습니다. 우선 넘어가자구요 🤔)
+우선, Reason은 OCaml의 syntax sugar로서 OCaml 컴파일러가 아닌 [BuckleScript](https://rescript-lang.org/)의 컴파일러를 이용해서 Javascript 코드로 트랜스파일(transpile) 합니다. (왜 BuckleScript라고 하구선 링크는 ReScript라는 곳으로 연결될까?라고 하시는 분들께는 별도의 포스트로 OCaml/Reason/BuckleScript/ReScript의 어두운 과거를 되짚는 포스트에서 자세히 설명드리도록 하겠습니다. 우선 넘어가자구요 🤔)
+
 ### BuckleScript를 추가하기
 BuckleScript라는 컴파일러를 프로젝트에 추가하는 것은 매우 간단합니다.
 
@@ -63,7 +65,7 @@ $ npm install --save-dev bs-platform
 ```
 >https://reasonml.github.io/reason-react/docs/en/installation#adding-reason-to-an-existing-reactjs-project-create-react-app-nextjs-etc
 
-그리고 `reason-react` 모듈을 설치해줍니다.
+그리고 `reason-react` 모듈을 설치해줍니다. Gatsby는 React니까요. Reason의 React는 ReasonReact!
 
 ```shell
 $ yarn add reason-react
@@ -84,7 +86,7 @@ $ yarn add reason-react
 
 앞으로 개발 중에는 watch 모드로 BuckleScript를 하나 돌려놓고, gatsby develop도 동시에 돌려놓습니다. 음.. 그런데 뭐 변한게 하나도 없어 보이네요. 그러면 본격적으로 ReasonML을 이용해서 index.js 파일을 *.re로 바꿔볼까요?
 
-### 첫 ReasonML로 페이지 만들기 - Index.re
+### 첫 Reason로 페이지 만들기 - Index.re
 과감하게 index.js 파일을 지워버리고 Index.re 파일을 같은 위치에 만들어 봅니다.
 
 ```reason
@@ -95,7 +97,7 @@ let make = () => {
 }
 ```
 
-Watch 모드인 bsb가 새로 트랜스파일이 되면서 Index.bs.js 파일이 같은 위치에 생성된 것이 보일 겁니다.
+Watch 모드인 bsb가 새로 트랜스파일한 결과물 Index.bs.js 파일이 같은 위치에 생성된 것이 보일 겁니다.
 
 <img src="./assets/gatsby-hello-index-bs-js.png" alt="index-bs-js" />
 
@@ -189,11 +191,11 @@ export {
 /* react Not a pure module */
 ```
 
-오늘도 한 고비를 넘겼다고 스스로를 격려해줍시다. 당신은 Gatsby에 ReasonML로 첫 페이지를 구현한 것 입니다 👏
+오늘도 한 고비를 넘겼다고 스스로를 격려해줍시다. 당신은 Gatsby에 Reason으로 첫 페이지를 구현한 것 입니다 👏
 
 ### `gatsby-image` 플러그인으로 Image 불러오기
 
-Minor한 언어를 하기로 마음 먹는다는 것은, 또한 작은 성취에 만족하지 않는다는 것을 의미하기도 합니다. 여느 때라면 이 정도 쯤에서 탕수육 한 점을 `찍먹`한 것처럼 해봤다는 데 의미를 둘 수 있을지도 모릅니다. 하지만 이 기세를 몰아서 이미지 파일을 하나 불러보겠습니다.
+Minor한 언어를 하기로 마음 먹는다는 것은, 또한 작은 성취에 만족하지 않는다는 것을 의미하기도 합니다. 여느 때라면 이 정도 쯤에서 탕수육 한 점을 `찍먹`한 것처럼 해봤다는 그 자체에 의미를 두고 쉬러 갈 수 있었을지도 모릅니다. 하지만 이 기세를 몰아서 이미지 파일을 하나 불러보겠습니다.
 
 갓츠비에는 아주 유명한 image 관련 plugin이 있습니다. 아마 Gatsby로 프로젝트를 진행하시는 분들이라면 아마 대부분 사용하실텐데요.
 
@@ -222,11 +224,11 @@ module.exports = {
 }
 ```
 
-Gatsby에서 이 플러그인을 사용해보셨던 분들은 아마 이 plugin 문서의 [how-to-use](https://www.gatsbyjs.com/plugins/gatsby-image/?=gatsby-image#how-to-use)와 같이 사용해보셨을 겁니다. 바로 그렇습니다. Gatsby를 갓츠비로 만들어주는 GraphQL 입니다. 이걸 ReasonML로 구현해보겠습니다.
+Gatsby에서 이 플러그인을 사용해보셨던 분들은 아마 이 plugin 문서의 [how-to-use](https://www.gatsbyjs.com/plugins/gatsby-image/?=gatsby-image#how-to-use)와 같이 사용해보셨을 겁니다. 바로 그렇습니다. Gatsby를 갓츠비로 만들어주는 GraphQL 입니다. 이걸 Reason으로 구현해보겠습니다.
 
-우린 ReasonML의 JS Interop을 하려는 것 입니다. 다른 언어에서 FFI(Foreign Function Interop)라고도 하는 바로 그것이죠. ReasonML/ReScript가 내세우는 Killer feature 중 하나이기도 합니다.
+우린 지금 Reason의 JS Interop을 하려는 것 입니다. 다른 언어에서 FFI(Foreign Function Interop)라고도 하는 바로 그것이죠. Reason/ReScript가 내세우는 Killer feature 중 하나이기도 합니다.
 
-`src/bindings/`라는 위치에 `Gatsby.re`라는 파일을 만듭니다. ReasonML에서 모든 *.re 파일은 `module`입니다. 즉 Gatsby라는 모듈이 생긴거죠. 이 모듈 안에 gatsby-image js 모듈을 binding 해보겠습니다.
+`src/bindings/`라는 위치에 `Gatsby.re`라는 파일을 만듭니다. Reason에서 모든 *.re 파일은 `module`입니다. 즉 Gatsby라는 모듈이 생긴거죠. 이 모듈 안에 `gatsby-image` js 모듈을 binding 해보겠습니다.
 
 ```reason
 [@bs.module "gatsby"]
@@ -307,16 +309,20 @@ let default = make;
 
 몇가지 살펴봐야할 부분들을 정리해보면 이렇습니다.
 
-1. `%bs.raw`를 사용해서 GraphQL query를 위한 JS 코드를 날 것 그대로 사용하였습니다.
+1. `%bs.raw`를 사용해서 GraphQL query를 위한 JS 코드를 날(raw) 것 그대로 사용하였습니다.
    
 2. `Js.log`를 이용해서 console.log 해보면, 이렇게 query된 데이터가 들어온 것을 확인할 수 있습니다.
 
 <img src="./assets/gatsby-hello-console-log.png" alt="console-log" />
 
-3. 마지막으로 중요한 내용이 있는데요. `useStaticQuery`는 query 대상에 따라 type이 특정되는데, 타입을 인자로 받아, 그 인자에 해당하는 모든 결과 data의 type을 정해야합니다. 만약 여러분의 어플리케이션에서 해당 data가 type system을 이용해서 runtime의 에러를 compile time에서 제거해야할 필요가 있고 그만큼의 리소스를 투입해도 ROI가 나온다면 그렇게 해야할 것 입니다만, 저희는 페이지에 불러올 이미지는 개발 과정의 runtime에서 충분히 잡아낼 수 있고, 만약 production 배포 후의 문제라면 그건 type system으로도 막을 수 없는 기타의 문제(네트워크 에러, 등.)가 대부분일 것이라 판단하여, `##` escape hatch를 사용하였습니다. `##`를 사용하는 건 type system의 보호를 받을 수가 없습니다.
+3. 마지막으로 중요한 내용이 있는데요. `useStaticQuery`는 query 대상에 따라 type이 특정되어야 하는데, 만약 엄격하게 타입을 정의한다면, 타입을 인자로 받아 그 인자에 해당하는 모든 각각의 결과 data type을 정해야합니다. 만약 여러분의 어플리케이션에서 해당 data가 Reason의 type system을 이용해서 runtime 에러를 compile-time에서 제거해야할 필요가 있고, 또한 그만큼의 리소스를 투입해도 ROI가 나온다면 그렇게 해야할 것 입니다. 하지만, 저희는 페이지에 불러올 이미지에 대해서는 개발 과정 중 runtime에서 충분히 잡아낼 수 있고, 만약 production 배포 후의 문제라면 그건 type system으로도 막을 수 없는 기타의 문제(네트워크 에러, 등.)가 대부분일 것이라 판단하여, `##` escape hatch를 사용하였습니다. `##`를 사용하는 건 type system의 보호를 받을 수가 없다는 것을 의미합니다.
 
 <img src="./assets/gatsby-hello-fluid-camel.png" alt="camel">
 
 짜잔~! 👍
 
-빠르게 image를 불러오는 것까지 Gatsby에 ReasonML을 끼얹어보았습니다. 이 포스트를 읽으셨다는 것은 한국어를 모국어로 하면서 ReasonML을 어느 정도 다뤄봤으며, 그 여정을 계속하고 계신 분이라고 생각되는데요. 그 여정이 저 사진의 낙타가 서있는 사막처럼 아무도 없는 듯 하고, 목이 타는 갈증에 괴롭더라도 그 여정의 끝에는 멋진 오아시스가 있을 것입니다. 응원합니다.
+## 마무리
+
+빠르게 image를 불러오는 것까지 Gatsby에 ReasonML을 끼얹어보았습니다. 현재 그린랩스 웹개발팀은 여러 웹 어플리케이션 중, 팜모닝(https://farmmorning.com) 을 Gatsby와 Reason 조합으로 개발하여 세상에 내놓았습니다. 그리고 ReasonReact를 이용해서 SPA도 개발하여 배포하고 있습니다.
+
+이 포스트를 읽으셨다는 것은 한국어를 모국어로 하면서 ReasonML을 어느 정도 다뤄봤으며, 그 여정을 계속하고 계신 분이라고 생각되는데요. 그 여정이 저 사진의 낙타가 서있는 사막처럼 아무도 없는 듯 하고, 목이 타는 갈증에 괴롭더라도 그 여정의 끝에는 멋진 오아시스가 있을 것입니다. 응원합니다.
