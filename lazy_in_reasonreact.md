@@ -144,7 +144,7 @@ React.API 중에 이럴 경우를 위해 `React.useMemo`가 있어서, 이런 �
   <p> {Lazy.force(lazyUpperText)->React.string} </p>
 ```
 
-`React.useMemo`를 사용하기 전과 똑같습니다. 왜냐하면 리액트 함수 컴포넌트 안에서 state가 변할 때마다 `Helper.compute`함수의 지연된 값을 만들지만, 그 아래 JSX 블럭 안에서 `.force` evaluation이 바로 바로 일어나버리는 것이죠.
+이상하게도 `React.useMemo`를 사용하기 전과 똑같습니다. 왜냐하면 리액트 함수 컴포넌트 안에서 state가 변할 때마다 `Helper.compute`함수의 지연된 값을 만들지만, 그 아래 JSX 블럭 안에서 `.force` evaluation이 바로 바로 일어나버리는 것이죠.
 
 그렇다면, `let lazyUpperText = lazy(Helper.compute(text))`를 리액트 컴포넌트 밖으로 빼볼까요? 물론 text는 인자로 넘겨줄 수가 없으니 값을 바꾸겠습니다.
 
@@ -164,7 +164,7 @@ let lazyUpperText = lazy(Helper.compute("I'm just lazy"));
 </label>
 ```
 
-show라는 체크박스를 하나 만들었고, 체크를 하면 몇 초가 지난 후에 값이 DOM에 잘 그려집니다. 그리고 체크를 풀고 다시 켰을 때, 처음과는 다르게 빠르게 그 값이 그려지죠! 컴포넌트 밖에서 lazy value를 만들 때 deferred computatio(지연 연산)을 하고 싶은 인자를 전달해서 lazy value를 만들고, 그것을 컴포넌트 내에서 필요할 때 evalutation하면 좋을 것 같습니다.
+show라는 체크박스를 하나 만들었고, 체크를 하면 몇 초가 지난 후에 값이 DOM에 잘 그려집니다. 그리고 체크를 풀고 다시 켰을 때, 처음과는 다르게 빠르게 그 값이 그려지죠! 컴포넌트 밖에서 lazy value를 만들 때 deferred computation(지연 연산)을 하고 싶은 인자를 전달해서 lazy value를 만들고, 그것을 컴포넌트 내에서 필요할 때 evalutation하면 좋을 것 같습니다.
 
 그래서 ReScript 문서에서도 유용한 활용 예를 아래와 같이 들고 있습니다.
 
